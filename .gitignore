@@ -1,0 +1,32 @@
+# Visual Studio и JetBrains Rider
+.vs/
+.idea/
+
+# Бинарные файлы
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+
+# Пакеты и зависимости
+node_modules/
+packages/
+
+# Файлы конфигурации и настроек
+appsettings.json
+appsettings.Development.json
+launchSettings.json
+*.user
+
+# Ресурсы и локализация
+*.resx
+Resources/
+
+# Тесты
+TestResults/
+*.trx
+
+# Другие временные файлы
+.DS_Store
+
