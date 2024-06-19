@@ -1,15 +1,17 @@
 using AppleStore.Core.Models;
 
- 
- namespace AppleStore.DataAccess.Interfaces
- {
- public interface ICartItemRepository
+namespace AppleStore.DataAccess.Interfaces
+{
+    public interface ICartRepository
     {
-        Task<List<CartItem>> GetCartItemsAsync();
-        Task AddProductToCartAsync(Guid productId);
-        Task RemoveProductFromCartAsync(Guid productId);
-        Task<decimal> GetTotalCartValueAsync();
-        Task<int> GetTotalCartItemsCountAsync();
-        Task ClearCartAsync();
+        Task<CartItem> GetCartByIdAsync(Guid cartId);
+        Task AddProductToCartAsync(Guid cartId, Guid productId);
+        Task<List<Product>> GetAllProductsInCartAsync(Guid cartId);
+        Task<decimal> GetTotalCartPriceAsync(Guid cartId);
+        Task<int> GetTotalProductCountAsync(Guid cartId);
+        Task SortCartProductsByPriceAsync(Guid cartId);
+        Task SortCartProductsByNameAsync(Guid cartId);
+        Task<Guid> CreateCart();
+        Task<List<CartItem>> GetAllCarts();
     }
- }
+}

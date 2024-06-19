@@ -16,6 +16,8 @@ namespace AppleStore.DataAccess.Repositories
             _dbContext = dbContext;
         }
 
+        
+
         public async Task<List<Product>> GetProductsAsync(int page, int pageSize)
         {       
             return await _dbContext.Products

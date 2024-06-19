@@ -3,21 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppleStore.Core", "AppleStore.Core\AppleStore.Core.csproj", "{AAC4976E-DB9A-4395-A146-5A7E6F5A0D4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppleStore.Core", "AppleStore.Core\AppleStore.Core.csproj", "{AAC4976E-DB9A-4395-A146-5A7E6F5A0D4E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppleStore.Console", "AppleStore.Console\AppleStore.Console.csproj", "{FC3F3220-E036-4CDA-8166-F271D77F26E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppleStore.Console", "AppleStore.Console\AppleStore.Console.csproj", "{FC3F3220-E036-4CDA-8166-F271D77F26E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppleStore.DataAccess", "AppleStore.DataAccess\AppleStore.DataAccess.csproj", "{BC8B4711-68C2-4D80-8156-E8C932A8B481}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppleStore.DataAccess", "AppleStore.DataAccess\AppleStore.DataAccess.csproj", "{BC8B4711-68C2-4D80-8156-E8C932A8B481}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppleStore.Aplication", "AppleStore.Aplication\AppleStore.Aplication.csproj", "{A51899C5-7941-4454-92F6-90FEAED8239F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppleStore.Aplication", "AppleStore.Aplication\AppleStore.Aplication.csproj", "{A51899C5-7941-4454-92F6-90FEAED8239F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppleStore.Ui", "AppleStore.Ui\AppleStore.Ui.csproj", "{63C93552-E037-4C98-8D2E-D80ABFB0A8B3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppleStore.Api", "AppleStore.Api\AppleStore.Api.csproj", "{5B503EB4-49C1-4986-80BC-3073339E6A30}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{AAC4976E-DB9A-4395-A146-5A7E6F5A0D4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -32,13 +33,23 @@ Global
 		{BC8B4711-68C2-4D80-8156-E8C932A8B481}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC8B4711-68C2-4D80-8156-E8C932A8B481}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC8B4711-68C2-4D80-8156-E8C932A8B481}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5CDFFCEE-09B4-4E20-9E8C-88A587A4A1E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5CDFFCEE-09B4-4E20-9E8C-88A587A4A1E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5CDFFCEE-09B4-4E20-9E8C-88A587A4A1E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5CDFFCEE-09B4-4E20-9E8C-88A587A4A1E3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A51899C5-7941-4454-92F6-90FEAED8239F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A51899C5-7941-4454-92F6-90FEAED8239F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A51899C5-7941-4454-92F6-90FEAED8239F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A51899C5-7941-4454-92F6-90FEAED8239F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63C93552-E037-4C98-8D2E-D80ABFB0A8B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63C93552-E037-4C98-8D2E-D80ABFB0A8B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63C93552-E037-4C98-8D2E-D80ABFB0A8B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63C93552-E037-4C98-8D2E-D80ABFB0A8B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B503EB4-49C1-4986-80BC-3073339E6A30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B503EB4-49C1-4986-80BC-3073339E6A30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B503EB4-49C1-4986-80BC-3073339E6A30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B503EB4-49C1-4986-80BC-3073339E6A30}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3A9F01F6-8934-43BD-BB01-90CC404C3CA7}
 	EndGlobalSection
 EndGlobal

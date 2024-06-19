@@ -17,5 +17,5 @@ namespace AppleStore.DataAccess
 
             base.OnModelCreating(modelBuilder);
         }
-    }
+    } 
 }

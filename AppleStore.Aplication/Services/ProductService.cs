@@ -1,9 +1,11 @@
+using AppleStore.ApplicationLayer.Interfaces;
 using AppleStore.Core.Models;
 using AppleStore.DataAccess.Interfaces;
+using Azure;
 
-namespace AppleStore.Application.Services
+namespace AppleStore.ApplicationLayer.Services
 {
-    public class ProductService
+    public class ProductService : IProductService
     {
         private readonly IProductRepository _productRepository;
 
@@ -11,7 +13,7 @@ namespace AppleStore.Application.Services
         {
             _productRepository = productRepository;
         }
-
+        
         public async Task<List<Product>> GetProductsAsync(int page, int pageSize)
         {
             return await _productRepository.GetProductsAsync(page, pageSize);
