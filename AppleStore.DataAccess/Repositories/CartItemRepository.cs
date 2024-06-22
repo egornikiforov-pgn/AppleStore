@@ -16,39 +16,84 @@ namespace AppleStore.DataAccess.Repositories
             _dbContext = dbContext;
         }
 
+        public async Task RemoveProduct(Guid idCart, Guid idProduct)
+        {
+            var cart = await _dbContext.CartItems
+                .Include(ci => ci.CartItemProducts)
+                .ThenInclude(cp => cp.Product)
+                .FirstOrDefaultAsync(ci => ci.Id == idCart);
+
+            if (cart == null)
+            {
+                throw new Exception($"Корзина с Id {idCart} не найдена.");
+            }
+
+            var cartItemProduct = cart.CartItemProducts
+                .FirstOrDefault(product => product.ProductId == idProduct);
+
+            if (cartItemProduct != null)
+            {
+                _dbContext.CartItemProducts.Remove(cartItemProduct);
+                await _dbContext.SaveChangesAsync();
+            }
+            else
+            {
+                throw new Exception($"Продукт с Id {idProduct} не найден в корзине.");
+            }
+        }
+
+
         public async Task<List<CartItem>> GetAllCarts()
         {
-            return await _dbContext.CartItems
-                .Select(p => new CartItem(
-                    p.Id,
-                    p.Products
-                        .Select(prod => new Product(
-                            prod.Id,
-                            prod.Name,
-                            prod.Price,
-                            prod.Image
+            try
+            {
+                var carts = await _dbContext.CartItems
+                    .Include(ci => ci.CartItemProducts)
+                        .ThenInclude(cp => cp.Product)
+                    .ToListAsync();
+
+                var cartItems = carts.Select(cartEntity => new CartItem(
+                
+                    id: cartEntity.Id,
+                    products: cartEntity.CartItemProducts.Select(cp => new Product
+                    (
+                        id: cp.Product.Id,
+                        name: cp.Product.Name,
+                        price: cp.Product.Price,
+                        image: cp.Product.Image
                     )).ToList()
-                )).ToListAsync();
+                )).ToList();
+
+                return cartItems;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while fetching carts with products: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<Guid> CreateCart()
         {
-            var cart = new CartItemEntity
+            try
             {
-                Id = Guid.NewGuid(),
-                Products = new List<ProductEntity>()
-            };
-
-            _dbContext.CartItems.Add(cart);
-            await _dbContext.SaveChangesAsync();
-            return cart.Id;
+                var cart = new CartItemEntity();
+                _dbContext.CartItems.Add(cart);
+                await _dbContext.SaveChangesAsync();
+                return cart.Id;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
 
         }
 
         public async Task<CartItem> GetCartByIdAsync(Guid cartId)
         {
             var cartEntity = await _dbContext.CartItems
-                .Include(ci => ci.Products)
+                .Include(ci => ci.CartItemProducts)
+                    .ThenInclude(cp => cp.Product)
                 .FirstOrDefaultAsync(ci => ci.Id == cartId);
 
             if (cartEntity == null)
@@ -56,43 +101,65 @@ namespace AppleStore.DataAccess.Repositories
                 throw new NotFoundException($"Cart with ID {cartId} not found.");
             }
 
-            var products = cartEntity.Products.Select(p => new Product
-            (
-                id: p.Id,
-                name: p.Name,
-                price: p.Price,
-                image: p.Image
-            )).ToList();
+            var products = cartEntity.CartItemProducts
+                .Select(cp => new Product
+                (
+                    id: cp.Product.Id,
+                    name: cp.Product.Name,
+                    price: cp.Product.Price,
+                    image: cp.Product.Image
+                ))
+                .ToList();
 
-            return new CartItem
+            var cartItem = new CartItem
             (
                 id: cartEntity.Id,
                 products: products
             );
-        }
 
+            return cartItem;
+        }
         public async Task AddProductToCartAsync(Guid cartId, Guid productId)
         {
-            var cartEntity = await _dbContext.CartItems
-                .Include(ci => ci.Products)
-                .FirstOrDefaultAsync(ci => ci.Id == cartId);
-
-            if (cartEntity == null)
+            try
             {
-                throw new NotFoundException($"Cart with ID {cartId} not found.");
-            }
+                var cart = await _dbContext.CartItems
+                    .Include(ci => ci.CartItemProducts)
+                        .ThenInclude(cp => cp.Product)
+                    .FirstOrDefaultAsync(ci => ci.Id == cartId);
 
-           var productEntity = await _dbContext.Products.FindAsync(productId);
-            if (productEntity == null)
+                if (cart == null)
+                {
+                    throw new NullReferenceException($"Корзина с Id {cartId} не найдена.");
+                }
+
+                var product = await _dbContext.Products
+                    .FirstOrDefaultAsync(p => p.Id == productId);
+
+                if (product == null)
+                {
+                    throw new NullReferenceException($"Продукт с Id {productId} не найден.");
+                }
+
+                if (cart.CartItemProducts.Any(cp => cp.ProductId == productId))
+                {
+                    throw new RelapseException($"Продукт с Id {productId} уже находится в корзине.");
+                }
+
+                var cartItemProduct = new CartItemProductEntity
+                {
+                    CartItemId = cartId,
+                    ProductId = productId
+                };
+
+                _dbContext.CartItemProducts.Add(cartItemProduct);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
             {
-                throw new NotFoundException($"Cart with ID {productId} not found.");
+                Console.WriteLine(ex.Message);
+                throw new Exception("Произошла ошибка при сохранении изменений в базе данных.");
             }
-
-            //if (cartEntity.Products.Any(p => p.Id == productId))
-            productEntity.CartItems.Add(cartEntity);
-            cartEntity.Products.Add(productEntity);
-            _dbContext.CartItems.Update(cartEntity);
-            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<List<Product>> GetAllProductsInCartAsync(Guid cartId)
@@ -105,12 +172,12 @@ namespace AppleStore.DataAccess.Repositories
                 throw new NotFoundException($"Cart with ID {cartId} not found.");
             }
 
-            var products = cartEntity.Products.Select(p => new Product
+            var products = cartEntity.CartItemProducts.Select(p => new Product
             (
-                id: p.Id,
-                name: p.Name,
-                price: p.Price,
-                image: p.Image
+                id: p.Product.Id,
+                name: p.Product.Name,
+                price: p.Product.Price,
+                image: p.Product.Image
             )).ToList();
 
             return products;
@@ -119,7 +186,8 @@ namespace AppleStore.DataAccess.Repositories
         public async Task<decimal> GetTotalCartPriceAsync(Guid cartId)
         {
             var cartEntity = await _dbContext.CartItems
-                .Include(ci => ci.Products)
+                .Include(ci => ci.CartItemProducts)
+                    .ThenInclude(cp => cp.Product)
                 .FirstOrDefaultAsync(ci => ci.Id == cartId);
 
             if (cartEntity == null)
@@ -127,13 +195,14 @@ namespace AppleStore.DataAccess.Repositories
                 throw new NotFoundException($"Cart with ID {cartId} not found.");
             }
 
-            return cartEntity.Products.Sum(p => p.Price);
+            return 0;
         }
 
         public async Task<int> GetTotalProductCountAsync(Guid cartId)
         {
             var cartEntity = await _dbContext.CartItems
-                .Include(ci => ci.Products)
+                .Include(ci => ci.CartItemProducts)
+                    .ThenInclude(cp => cp.Product)
                 .FirstOrDefaultAsync(ci => ci.Id == cartId);
 
             if (cartEntity == null)
@@ -141,36 +210,60 @@ namespace AppleStore.DataAccess.Repositories
                 throw new NotFoundException($"Cart with ID {cartId} not found.");
             }
 
-            return cartEntity.Products.Count;
+            return 0;
         }
         public async Task SortCartProductsByPriceAsync(Guid cartId)
         {
-            var cartEntity = await _dbContext.CartItems
-                .Include(ci => ci.Products)
-                .FirstOrDefaultAsync(ci => ci.Id == cartId);
-
-            if (cartEntity == null)
+            try
             {
-                throw new NotFoundException($"Cart with ID {cartId} not found.");
-            }
+                var cart = await _dbContext.CartItems
+                    .Include(ci => ci.CartItemProducts)
+                    .ThenInclude(cp => cp.Product)
+                    .FirstOrDefaultAsync(ci => ci.Id == cartId);
 
-            cartEntity.Products = cartEntity.Products.OrderBy(p => p.Price).ToList();
-            await _dbContext.SaveChangesAsync();
+                if (cart == null)
+                {
+                    throw new Exception($"Корзина с Id {cartId} не найдена.");
+                }
+
+                var products = cart.CartItemProducts
+                    .Select(cp => cp.Product) 
+                    .OrderBy(p => p.Price)    
+                    .ToList();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while retrieving products from cart: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task SortCartProductsByNameAsync(Guid cartId)
         {
-            var cartEntity = await _dbContext.CartItems
-                .Include(ci => ci.Products)
-                .FirstOrDefaultAsync(ci => ci.Id == cartId);
-
-            if (cartEntity == null)
+            try
             {
-                throw new NotFoundException($"Cart with ID {cartId} not found.");
-            }
+                var cartEntity = await _dbContext.CartItems
+                    .Include(ci => ci.CartItemProducts)
+                        .ThenInclude(cp => cp.Product)
+                    .FirstOrDefaultAsync(ci => ci.Id == cartId);
 
-            cartEntity.Products = cartEntity.Products.OrderBy(p => p.Name).ToList();
-            await _dbContext.SaveChangesAsync();
+                if (cartEntity == null)
+                {
+                    throw new NotFoundException($"Cart with ID {cartId} not found.");
+                }
+
+                cartEntity.CartItemProducts = cartEntity.CartItemProducts
+                    .OrderBy(cp => cp.Product.Name)
+                    .ToList();
+
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while sorting cart products by name: {ex.Message}");
+                throw;
+            }
         }
     }
 }

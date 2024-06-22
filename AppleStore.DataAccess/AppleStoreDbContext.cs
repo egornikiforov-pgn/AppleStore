@@ -9,11 +9,13 @@ namespace AppleStore.DataAccess
     {
         public DbSet<CartItemEntity> CartItems { get; set; }
         public DbSet<ProductEntity> Products  { get; set; }
+        public DbSet<CartItemProductEntity> CartItemProducts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new CartItemConfiguration());
-            modelBuilder.ApplyConfiguration(new ProductConfiguration());
+            modelBuilder.ApplyConfiguration(new CartItemEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new CartItemProductEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductEntityConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

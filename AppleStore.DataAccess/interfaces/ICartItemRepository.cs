@@ -1,4 +1,5 @@
 using AppleStore.Core.Models;
+using AppleStore.DataAccess.Repositories;
 
 namespace AppleStore.DataAccess.Interfaces
 {
@@ -13,5 +14,6 @@ namespace AppleStore.DataAccess.Interfaces
         Task SortCartProductsByNameAsync(Guid cartId);
         Task<Guid> CreateCart();
         Task<List<CartItem>> GetAllCarts();
+        Task RemoveProduct(Guid idCart, Guid idProduct);
     }
 }

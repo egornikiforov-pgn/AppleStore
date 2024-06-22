@@ -1,14 +1,11 @@
 ﻿using AppleStore.ApplicationLayer.Interfaces;
-using AppleStore.Core.Models;
-using AppleStore.DataAccess.Interfaces;
+using AppleStore.DataAccess.Exceptions;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
 
 namespace AppleStore.Api.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class CartController : ControllerBase
     {
         private readonly ICartItemServices _cartItemServices;
@@ -24,7 +21,7 @@ namespace AppleStore.Api.Controllers
             try
             {
                 var carts = await _cartItemServices.GetAllCarts();
-                return Ok(new { carts});
+                return Ok(carts);
             }
             catch (Exception ex)
             {
@@ -32,7 +29,21 @@ namespace AppleStore.Api.Controllers
             }
         }
 
-        [HttpPost("create-cart")]
+        [HttpPost("remove-product-idCart{idCart}-idproduct{idProd}")]
+        public async Task<IActionResult> RemoveProduct(Guid idCart, Guid idProd)
+        {
+            try
+            {
+                await _cartItemServices.RemoveProduct(idCart, idProd);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("create-cart")]
         public async Task<IActionResult> CreateCart()
         {
             try
@@ -54,8 +65,12 @@ namespace AppleStore.Api.Controllers
                 await _cartItemServices.AddProductToCartAsync(cartId, productId);
                 return Ok();
             }
-            catch (Exception ex)
+            catch (RelapseException ex)
             {
+                return Ok(new { status = 1488 });
+            }
+            catch (NullReferenceException ex)
+            { 
                 return StatusCode(500, ex.Message);
             }
         }

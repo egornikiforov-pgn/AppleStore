@@ -27,7 +27,7 @@ namespace AppleStore.Api.Controllers
         {
             _productService = productService;
         }
-            [HttpGet("products")]
+            [HttpGet("products{page}/{pageSize}")]
             public async Task<ActionResult<List<Product>>> GetProducts(int page = 1, int pageSize = 20)
             {
                 var products = await _productService.GetProductsAsync(page, pageSize);

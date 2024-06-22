@@ -26,7 +26,10 @@ namespace AppleStore.ApplicationLayer.Services
         {
             return await _cartItemRepository.CreateCart();
         }
-
+        public async Task RemoveProduct(Guid cartId, Guid productId)
+        {
+            await _cartItemRepository.RemoveProduct(cartId, productId);
+        }
         public async Task AddProductToCartAsync(Guid cartId, Guid productId)
         {
             await _cartItemRepository.AddProductToCartAsync(cartId, productId);

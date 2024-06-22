@@ -6,6 +6,7 @@ namespace AppleStore.ApplicationLayer.Interfaces
 {
     public interface ICartItemServices
     {
+        Task RemoveProduct(Guid cartId, Guid productId);
         Task<CartItem> GetCartByIdAsync(Guid cartId);
         Task AddProductToCartAsync(Guid cartId, Guid productId);
         Task<List<Product>> GetAllProductsInCartAsync(Guid cartId);

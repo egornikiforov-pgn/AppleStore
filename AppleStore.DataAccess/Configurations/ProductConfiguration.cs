@@ -4,14 +4,19 @@ using AppleStore.DataAccess.Entities;
 
 namespace AppleStore.DataAccess.Configurations
 {
-    public class ProductConfiguration : IEntityTypeConfiguration<ProductEntity>
+    public class ProductEntityConfiguration : IEntityTypeConfiguration<ProductEntity>
     {
         public void Configure(EntityTypeBuilder<ProductEntity> builder)
         {
-            builder.HasKey(e => e.Id);
-            builder.Property(p => p.Name).IsRequired();
-            builder.Property(p => p.Price).IsRequired();
-            
+            builder.ToTable("Products");
+
+            builder.HasKey(p => p.Id);
+
+            // Определяем связь один ко многим с таблицей-связкой CartItemProductEntity
+            builder.HasMany(p => p.CartItemProducts)
+                .WithOne(cp => cp.Product)
+                .HasForeignKey(cp => cp.ProductId)
+                .IsRequired();
         }
     }
 }
