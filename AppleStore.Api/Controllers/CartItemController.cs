@@ -57,17 +57,25 @@ namespace AppleStore.Api.Controllers
             }
         }
 
+        public class Status
+        {
+            public int Item { get; set; }
+        }
+
         [HttpPost("add-product/{cartId}/{productId}")]
         public async Task<IActionResult> AddProductToCart(Guid cartId, Guid productId)
         {
+            var status = new Status();
             try
             {
                 await _cartItemServices.AddProductToCartAsync(cartId, productId);
-                return Ok();
+                status.Item = 0;
+                return Ok(status);
             }
             catch (RelapseException ex)
             {
-                return Ok(new { status = 1488 });
+                status.Item = 1;
+                return Ok(status);
             }
             catch (NullReferenceException ex)
             { 

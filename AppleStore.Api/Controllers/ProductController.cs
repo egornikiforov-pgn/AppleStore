@@ -67,8 +67,29 @@ namespace AppleStore.Api.Controllers
                     return BadRequest(ex.Message);
                 }
             }
+        [HttpGet("add-some-product{name}-{price}-{image}")]
 
-            [HttpPut("{id}")]
+        public async Task<IActionResult> AddProduct(string name, decimal price, byte[] image)
+        {
+            var product = new Product(
+                    id: Guid.NewGuid(),
+                    name: name,
+                    price: price,
+                    image: image
+                );
+            try
+            {
+                await _productService.AddProductAsync(product);
+                return Ok();
+            }
+            catch (ProductIsNullExceptoin ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [HttpPut("{id}")]
             public async Task<IActionResult> UpdateProduct(Guid id, Product product)
             {
                 if (id != product.Id)
